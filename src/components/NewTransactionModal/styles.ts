@@ -81,9 +81,8 @@ interface TransactionTypeButtonProps {
   variant: 'income' | 'outcome'
 }
 
-export const TransactionTypeButton = styled(
-  RadioGroup.Item,
-)<TransactionTypeButtonProps>`
+// eslint-disable-next-line prettier/prettier
+export const TransactionTypeButton = styled(RadioGroup.Item)<TransactionTypeButtonProps>`
   background: ${(props) => props.theme['gray-700']};
   padding: 1rem;
   display: flex;
@@ -104,7 +103,7 @@ export const TransactionTypeButton = styled(
 
   &[data-state='unchecked']:hover {
     background: ${(props) => props.theme['gray-600']};
-    transition: background 0.2s;
+    transition: background-color 0.2s;
   }
 
   &[data-state='checked'] {
