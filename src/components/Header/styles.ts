@@ -20,6 +20,7 @@ export const HeaderContent = styled.div`
   justify-content: space-between;
   align-items: center;
 `
+
 export const NewTransactionButton = styled.button`
   height: 50px;
   border: 0;
