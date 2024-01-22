@@ -1,5 +1,6 @@
-import { ReactNode, createContext, useEffect, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useState } from 'react'
 import { api } from '../server/axios'
+import { createContext } from 'use-context-selector'
 
 interface Transaction {
   id: number
@@ -23,20 +24,16 @@ interface CreateTransactionInput {
 
 interface TransactionContextType {
   transactions: Transaction[]
-  // isNewTransactionModalOpen: boolean
   fetchTransactions: (query?: string) => Promise<void>
   createTransaction: (data: CreateTransactionInput) => Promise<void>
-  // closeModal: () => void
 }
 
 export const TransactionsContext = createContext({} as TransactionContextType)
 
 export function TransactionsProvider({ children }: TransactionsProviderProps) {
   const [transactions, setTransactions] = useState<Transaction[]>([])
-  // const [isNewTransactionModalOpen, setIsNewTransactionModalOpen] =
-  //   useState(false)
 
-  async function fetchTransactions(query?: string) {
+  const fetchTransactions = useCallback(async (query?: string) => {
     const response = await api.get('/transactions', {
       params: {
         _sort: 'created_at',
@@ -46,38 +43,35 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
     })
 
     setTransactions(response.data)
-  }
+  }, [])
 
-  async function createTransaction(data: CreateTransactionInput) {
-    const { description, category, price, type } = data
+  const createTransaction = useCallback(
+    async (data: CreateTransactionInput) => {
+      const { description, category, price, type } = data
 
-    const response = await api.post('/transactions', {
-      description,
-      type,
-      category,
-      price,
-      created_at: new Date(),
-    })
+      const response = await api.post('/transactions', {
+        description,
+        type,
+        category,
+        price,
+        created_at: new Date(),
+      })
 
-    setTransactions((state) => [response.data, ...state])
-  }
-
-  // function closeModal() {
-  //   setIsNewTransactionModalOpen((state) => !!state)
-  // }
+      setTransactions((state) => [response.data, ...state])
+    },
+    [],
+  )
 
   useEffect(() => {
     fetchTransactions()
-  }, [])
+  }, [fetchTransactions])
 
   return (
     <TransactionsContext.Provider
       value={{
         transactions,
-        // isNewTransactionModalOpen,
         fetchTransactions,
         createTransaction,
-        // closeModal,
       }}
     >
       {children}
